@@ -18,6 +18,7 @@ Working documentation for the `memU` Python package. Organised using the [Diatax
 | [Conversation memory](howto-conversation-memory.md) | Add persistent memory to a Python chatbot |
 | [Persistent storage](howto-persistent-storage.md) | Choose and configure inmemory / SQLite / Postgres backends |
 | [User-scoped memory](howto-user-scoped-memory.md) | Isolate memory per user in a multi-user application |
+| [Use GitHub Copilot instead of OpenAI](howto-github-copilot-provider.md) | Switch memU's LLM provider from OpenAI to GitHub Copilot (GitHub Models) |
 
 ## Tutorials — learning by doing
 
