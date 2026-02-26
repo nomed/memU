@@ -16,7 +16,7 @@ body:
     id: docs_title
     attributes:
       label: Docs Title
-      description: Short request title, preferably in the form `docs(<area>): <request>`
+      description: "Short request title, preferably in the form `docs(<area>): <request>`"
       placeholder: "docs(retrieve): explain rag vs llm behavior"
     validations:
       required: true
