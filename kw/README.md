@@ -20,6 +20,12 @@ Working documentation for the `memU` Python package. Organised using the [Diatax
 | [User-scoped memory](howto-user-scoped-memory.md) | Isolate memory per user in a multi-user application |
 | [Use GitHub Copilot instead of OpenAI](howto-github-copilot-provider.md) | Switch memU's LLM provider from OpenAI to GitHub Copilot (GitHub Models) |
 
+## Reference — complete field and behaviour descriptions
+
+| Document | Coverage |
+|---|---|
+| [`memorize_config` reference](reference-memorize-config.md) | All `MemorizeConfig` and `CategoryConfig` fields, defaults, recommended patterns by scenario |
+
 ## Tutorials — learning by doing
 
 | Document | What you build |
