@@ -135,6 +135,25 @@ class LLMConfig(BaseModel):
                 self.api_key = "XAI_API_KEY"
             if self.chat_model == "gpt-4o-mini":
                 self.chat_model = "grok-2-latest"
+        elif self.provider == "github":
+            # GitHub Models — OpenAI-compatible endpoint, auth via GitHub PAT
+            if self.base_url == "https://api.openai.com/v1":
+                self.base_url = "https://models.inference.ai.azure.com"
+            if self.api_key == "OPENAI_API_KEY":
+                self.api_key = "GITHUB_TOKEN"
+            # chat_model and embed_model defaults (gpt-4o-mini / text-embedding-3-small)
+            # are available on GitHub Models — no override needed
+        elif self.provider == "copilot":
+            # GitHub Copilot proxy — requires token exchange at runtime via
+            # https://api.github.com/copilot_internal/v2/token.
+            # Use client_backend="sdk" (default) for automatic token refresh.
+            if self.base_url == "https://api.openai.com/v1":
+                self.base_url = "https://api.individual.githubcopilot.com"
+            if self.api_key == "OPENAI_API_KEY":
+                self.api_key = "GITHUB_TOKEN"
+            if self.chat_model == "gpt-4o-mini":
+                # gpt-4o is the most broadly available model on Copilot plans.
+                self.chat_model = "gpt-4o"
         return self
 
 

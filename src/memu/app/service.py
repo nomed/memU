@@ -99,6 +99,16 @@ class MemoryService(MemorizeMixin, RetrieveMixin, CRUDMixin):
         cfg = config or self.llm_config
         backend = cfg.client_backend
         if backend == "sdk":
+            if cfg.provider == "copilot":
+                from memu.llm.copilot_client import CopilotSDKClient
+
+                return CopilotSDKClient(
+                    github_token=cfg.api_key,
+                    chat_model=cfg.chat_model,
+                    embed_model=cfg.embed_model,
+                    fallback_base_url=cfg.base_url,
+                    embed_batch_size=cfg.embed_batch_size,
+                )
             from memu.llm.openai_sdk import OpenAISDKClient
 
             return OpenAISDKClient(

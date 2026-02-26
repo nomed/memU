@@ -1,7 +1,9 @@
 from memu.llm.backends.base import LLMBackend
+from memu.llm.backends.copilot import CopilotBackend
 from memu.llm.backends.doubao import DoubaoLLMBackend
+from memu.llm.backends.github import GitHubModelsBackend
 from memu.llm.backends.grok import GrokBackend
 from memu.llm.backends.openai import OpenAILLMBackend
 from memu.llm.backends.openrouter import OpenRouterLLMBackend
 
-__all__ = ["DoubaoLLMBackend", "GrokBackend", "LLMBackend", "OpenAILLMBackend", "OpenRouterLLMBackend"]
+__all__ = ["CopilotBackend", "DoubaoLLMBackend", "GitHubModelsBackend", "GrokBackend", "LLMBackend", "OpenAILLMBackend", "OpenRouterLLMBackend"]
