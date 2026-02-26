@@ -1,213 +1,45 @@
 name: Docs Request (Orion)
-description: Request documentation work for Orion (`docs.agent.md`) with `kw/` as default target
+description: Free-form documentation request for Orion (`docs.agent.md`)
 title: "[DOCS] "
 labels: ["documentation"]
 body:
   - type: markdown
     attributes:
       value: |
-        Use this form to request a documentation task for Orion (`.github/agents/docs.agent.md`).
+        Free-form docs request for Orion (`.github/agents/docs.agent.md`).
 
-        Defaults:
-        - Target location: `kw/` (unless you explicitly request `docs/` or `README.md`)
-        - Writing model: **Diataxis** (`tutorial`, `howto`, `reference`, `explanation`)
+        Notes (optional):
+        - Default target is `kw/` unless you want `docs/` or `README.md`
+        - Diataxis is preferred (`tutorial`, `howto`, `reference`, `explanation`)
 
-  - type: input
-    id: docs_title
+  - type: textarea
+    id: request
     attributes:
-      label: Docs Title
-      description: "Short request title, preferably in the form `docs(<area>): <request>`"
-      placeholder: "docs(retrieve): explain rag vs llm behavior"
+      label: Request
+      description: Describe what you want documented or updated
+      placeholder: |
+        Explain what should be written/updated and why.
+        You can include target path, audience, examples to add, and any constraints.
     validations:
       required: true
 
   - type: textarea
-    id: summary
+    id: references
     attributes:
-      label: Summary
-      description: What documentation is needed and why?
+      label: References (optional)
+      description: Files, docs, issues, PRs, or commits Orion should look at
       placeholder: |
-        What is missing/unclear/outdated?
-        Who is the reader?
-        What should they understand or be able to do after reading?
+        docs/architecture.md
+        src/memu/app/retrieve.py
+        PR #123
     validations:
-      required: true
-
-  - type: dropdown
-    id: diataxis_type
-    attributes:
-      label: Primary Diataxis Type
-      description: Select the main document type
-      options:
-        - howto
-        - tutorial
-        - reference
-        - explanation
-    validations:
-      required: true
+      required: false
 
   - type: input
     id: target_path
     attributes:
-      label: Target Path (preferred)
-      description: Default is under `kw/`
+      label: Target path (optional)
+      description: Leave blank if Orion should decide (default preference: `kw/`)
       placeholder: "kw/retrieve/rag-vs-llm.md"
     validations:
-      required: true
-
-  - type: textarea
-    id: alternative_paths
-    attributes:
-      label: Alternative / Existing Paths (optional)
-      description: List acceptable alternatives or existing files to update
-      placeholder: |
-        docs/architecture.md
-        README.md
-        kw/retrieve/overview.md
-    validations:
       required: false
-
-  - type: checkboxes
-    id: scope_flags
-    attributes:
-      label: Scope (check what applies)
-      options:
-        - label: Current behavior only (no roadmap/planned features)
-        - label: Include examples/snippets
-        - label: Document backend differences (`inmemory` / `sqlite` / `postgres`) if relevant
-        - label: Document retrieval mode differences (`rag` / `llm`) if relevant
-        - label: Include config/settings details if relevant
-        - label: Add links to related docs/code paths
-
-  - type: textarea
-    id: topics_in_scope
-    attributes:
-      label: Topics In Scope
-      description: Specific points Orion must cover
-      placeholder: |
-        1. Query routing stage overview
-        2. Differences in ranking logic between `retrieve_rag` and `retrieve_llm`
-        3. Where `where` filtering is validated
-    validations:
-      required: true
-
-  - type: textarea
-    id: out_of_scope
-    attributes:
-      label: Out of Scope
-      description: What Orion should avoid changing/covering
-      placeholder: |
-        1. Provider-specific prompt internals
-        2. Planned retrieval modes
-    validations:
-      required: false
-
-  - type: textarea
-    id: source_of_truth
-    attributes:
-      label: Source of Truth
-      description: Files/docs/code paths Orion should inspect first
-      placeholder: |
-        AGENTS.md
-        docs/architecture.md
-        src/memu/app/retrieve.py
-        src/memu/app/service.py
-        tests/test_retrieve_*.py
-    validations:
-      required: true
-
-  - type: input
-    id: related_ref
-    attributes:
-      label: Related PR / Issue / Commit (optional)
-      placeholder: "#123 / PR #456 / commit abc1234"
-    validations:
-      required: false
-
-  - type: dropdown
-    id: audience
-    attributes:
-      label: Audience
-      options:
-        - contributors
-        - end users
-        - integrators
-        - maintainers
-        - mixed
-    validations:
-      required: true
-
-  - type: input
-    id: prerequisites
-    attributes:
-      label: Prerequisites (optional)
-      description: Tools/env/setup assumptions (e.g. uv, Python version, provider account, db setup)
-      placeholder: "uv, Python 3.11+, local sqlite setup"
-    validations:
-      required: false
-
-  - type: dropdown
-    id: expected_output
-    attributes:
-      label: Expected Output
-      options:
-        - New document (full Markdown)
-        - Update existing document in place
-        - Draft only (content proposal, no file edit)
-        - Patch/diff style changes
-    validations:
-      required: true
-
-  - type: checkboxes
-    id: formatting_preferences
-    attributes:
-      label: Formatting Preferences (optional)
-      options:
-        - label: Use frontmatter (only if target area already uses it)
-        - label: Include code blocks
-        - label: Include Mermaid diagram
-        - label: Include migration notes
-
-  - type: checkboxes
-    id: acceptance_checklist
-    attributes:
-      label: Acceptance Criteria (baseline)
-      description: Confirm expected standards for Orion output
-      options:
-        - label: Content must match current `memU` behavior
-          required: true
-        - label: Terminology must match code/docs (`MemoryService`, workflows, backends, profiles)
-          required: true
-        - label: Diataxis style should match the selected document type
-          required: true
-        - label: Output path should be `kw/` unless explicitly specified otherwise
-          required: true
-
-  - type: textarea
-    id: custom_acceptance
-    attributes:
-      label: Custom Acceptance Criteria (optional)
-      placeholder: |
-        1. Mention performance tradeoffs for sqlite vector search
-        2. Include one Python usage example and one config snippet
-    validations:
-      required: false
-
-  - type: textarea
-    id: constraints_notes
-    attributes:
-      label: Constraints / Notes (optional)
-      placeholder: |
-        - Keep it concise (max ~500 words)
-        - English only
-        - Do not modify README.md
-        - Must mention limitations/tradeoffs
-    validations:
-      required: false
-
-  - type: markdown
-    attributes:
-      value: |
-        Suggested assignment/workflow:
-        - Assign to `docs.agent.md` (Orion)
-        - Keep the task scoped to one topic when possible
