@@ -1,50 +1,44 @@
-# How to Use GitHub Copilot (GitHub Models) Instead of OpenAI
+# How to Use GitHub Copilot Instead of OpenAI
 
-**Diataxis type: How-to**
+> **Document type:** How-to — a task-focused guide for a specific goal.
 
-This guide answers a single question: _I currently configure memU with my OpenAI API key. How do I switch to GitHub Copilot?_
+This guide answers: _I currently configure memU with my OpenAI API key. How do I switch to GitHub Copilot?_
 
-The answer is a one-line change to `llm_profiles`. No other code changes are required.
+memU supports **two different GitHub-based providers**.  Choose the one that matches your access:
 
----
+| | `provider="copilot"` | `provider="github"` |
+|---|---|---|
+| **Requires** | GitHub Copilot subscription | Free GitHub account |
+| **Auth** | GitHub OAuth token → auto-exchanged for Copilot token | GitHub PAT (`models:read`) |
+| **Models** | All models on your Copilot plan | GitHub Models marketplace |
 
-## Goal
+Jump to the section that applies to you:
 
-Replace the OpenAI LLM provider with **GitHub Copilot (GitHub Models)** in memU. GitHub Models exposes a fully OpenAI API-compatible endpoint at `https://models.inference.ai.azure.com`. memU has a built-in `provider="github"` shortcut that targets this endpoint automatically.
-
----
-
-## Prerequisites
-
-- memU installed (`pip install memu` or `uv add memu`)
-- A GitHub account (free tier works; higher Copilot tiers give more generous rate limits)
-- A GitHub Personal Access Token with `models:read` scope (see Step 1)
+- [Option A — GitHub Copilot subscription (real Copilot proxy)](#option-a--github-copilot-subscription-real-copilot-proxy)
+- [Option B — GitHub Models (no subscription required)](#option-b--github-models-no-subscription-required)
 
 ---
 
-## Step 1: Create a GitHub Personal Access Token
+## Option A — GitHub Copilot subscription (real Copilot proxy)
 
-1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**
-2. Click **Generate new token**
-3. Give the token a name (e.g. `memu-github-models`)
-4. Under **Permissions → Account permissions**, set **Models** to `Read-only` (`models:read`)
-5. Click **Generate token** and copy the value
+Use `provider="copilot"` to connect memU to the same proxy used by VS Code, JetBrains, and other
+Copilot-enabled tools.  memU automatically exchanges your GitHub OAuth token for a short-lived
+Copilot API token and refreshes it transparently — you never manage the short-lived token yourself.
 
-> **Note:** Classic tokens also work. When using a classic token, no specific scope is required — the token itself grants access to GitHub Models.
+### Step 1: Get a GitHub token with Copilot access
 
-Set the token in your shell environment:
+You need one of:
+
+- A **GitHub Personal Access Token (classic)** — no specific scope required; your account must
+  have an active Copilot Individual, Business, or Enterprise subscription.
+- A **GitHub OAuth token obtained via device-code flow** — the same mechanism used by the
+  VS Code Copilot extension (scope: `read:user`).
 
 ```bash
-export GITHUB_TOKEN=github_pat_...
+export GITHUB_TOKEN=your_github_token_here
 ```
 
-For persistent use, add this line to your `.bashrc`, `.zshrc`, or equivalent profile file.
-
----
-
-## Step 2: Update `llm_profiles` — before and after
-
-The only change is swapping the key name and adding `"provider": "github"`. Everything else — the model names, the service configuration — stays the same.
+### Step 2: Switch `llm_profiles`
 
 **Before (OpenAI):**
 
@@ -63,7 +57,7 @@ service = MemoryService(
 )
 ```
 
-**After (GitHub Copilot / GitHub Models):**
+**After (GitHub Copilot proxy):**
 
 ```python
 import os
@@ -72,91 +66,106 @@ from memu.app import MemoryService
 service = MemoryService(
     llm_profiles={
         "default": {
-            "provider": "github",
-            "api_key": os.environ["GITHUB_TOKEN"],
-            # chat_model defaults to "gpt-4o-mini"         — same as OpenAI default
-            # embed_model defaults to "text-embedding-3-small" — same as OpenAI default
+            "provider": "copilot",
+            "api_key": os.environ["GITHUB_TOKEN"],  # long-lived GitHub token
+            # chat_model defaults to "gpt-4o" — widely available on Copilot plans
+            # embed_model defaults to "text-embedding-3-small"
         },
     },
 )
 ```
 
-The `provider="github"` shortcut automatically sets:
+`provider="copilot"` sets these defaults automatically:
 
-- `base_url = "https://models.inference.ai.azure.com"`
-- `chat_model = "gpt-4o-mini"` (default, if not overridden)
-- `embed_model = "text-embedding-3-small"` (default, if not overridden)
+| Field | Value |
+|---|---|
+| `base_url` | `https://api.individual.githubcopilot.com` (fallback; real URL comes from token) |
+| `chat_model` | `gpt-4o` |
+| `embed_model` | `text-embedding-3-small` |
 
-Because the default model names are identical to the OpenAI defaults, no further changes are needed for a standard setup.
+> **Note:** `client_backend="sdk"` (the default) is required for automatic token exchange.
+> Do not set `client_backend="httpx"` unless you are pre-supplying a valid Copilot token.
 
----
-
-## Step 3: Choose a different model (optional)
-
-If you want to use a non-default model, pass `chat_model` or `embed_model` explicitly:
+### Step 3: Choose a model (optional)
 
 ```python
 service = MemoryService(
     llm_profiles={
         "default": {
-            "provider": "github",
+            "provider": "copilot",
             "api_key": os.environ["GITHUB_TOKEN"],
-            "chat_model": "gpt-4o",
-            "embed_model": "text-embedding-3-large",
+            "chat_model": "claude-sonnet-4.5",  # requires Copilot Business/Enterprise
         },
     },
 )
 ```
 
-**Available models on GitHub Models:**
+Available models (depends on your Copilot plan):
 
-| Type | Model name | Notes |
-|---|---|---|
-| Chat | `gpt-4o-mini` | Default; fast and cost-efficient |
-| Chat | `gpt-4o` | Higher capability |
-| Chat | `Phi-3.5-mini-instruct` | Microsoft open model; lightweight |
-| Embedding | `text-embedding-3-small` | Default; recommended |
-| Embedding | `text-embedding-3-large` | Higher-dimensional vectors |
+| Model | Notes |
+|---|---|
+| `gpt-4o` | Default; broadly available on all paid plans |
+| `gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano` | Latest GPT-4 family |
+| `claude-sonnet-4.5`, `claude-sonnet-4.6` | Anthropic Claude — Business/Enterprise |
+| `o1`, `o1-mini`, `o3-mini` | OpenAI reasoning models |
 
-> **Note:** Model availability may vary by Copilot tier or GitHub account type. Check [GitHub Models documentation](https://docs.github.com/en/github-models) for the current list.
+### Step 4: Handle embeddings (if needed)
 
----
-
-## Step 4: Using a separate embedding profile
-
-If you want to route chat and embeddings through different providers, use the `"embedding"` profile key. memU uses `"embedding"` for embedding calls when present, falling back to `"default"` otherwise.
+Embedding support via the Copilot proxy is not guaranteed.  If embedding calls fail, use a
+separate `"embedding"` profile pointing at OpenAI or another provider:
 
 ```python
 service = MemoryService(
     llm_profiles={
         "default": {
-            "provider": "github",
+            "provider": "copilot",
             "api_key": os.environ["GITHUB_TOKEN"],
             "chat_model": "gpt-4o",
         },
         "embedding": {
-            "provider": "github",
-            "api_key": os.environ["GITHUB_TOKEN"],
+            "provider": "openai",
+            "api_key": os.environ["OPENAI_API_KEY"],
             "embed_model": "text-embedding-3-small",
         },
     },
 )
 ```
 
-This pattern is also useful for mixing providers — for example, using GitHub Models for chat and a self-hosted embedding endpoint for vectors.
+### Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `401` on token exchange | Token missing, expired, or no active Copilot subscription | Check your GitHub token and subscription status |
+| `401` on API calls | Model not covered by your plan | Switch to `gpt-4o` (available on all paid plans) |
+| `429` | Rate limit | Reduce frequency; upgrade plan |
+| `404` model not found | Model ID typo or not on your plan | Use `gpt-4o` as a safe fallback |
+| Token exchange fails in CI | `GITHUB_TOKEN` in Actions lacks Copilot access | Store a dedicated PAT as a repository secret |
 
 ---
 
-## Verify it works
+## Option B — GitHub Models (no subscription required)
 
-Run this snippet to confirm the provider is wired up correctly:
+`provider="github"` connects to [GitHub Models](https://github.com/marketplace/models), which
+exposes OpenAI and other models through an OpenAI-compatible API.  No Copilot subscription is
+needed; a free GitHub account with a PAT is sufficient.
+
+### Step 1: Create a GitHub Personal Access Token
+
+1. Go to **GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens**
+2. Click **Generate new token**
+3. Under **Permissions → Account permissions**, set **Models** to `Read-only`
+4. Click **Generate token** and copy the value
+
+> **Note:** Classic tokens also work with no specific scope.
+
+```bash
+export GITHUB_TOKEN=github_pat_...
+```
+
+### Step 2: Switch `llm_profiles`
 
 ```python
-import asyncio
-import json
 import os
-import tempfile
-
 from memu.app import MemoryService
 
 service = MemoryService(
@@ -164,59 +173,56 @@ service = MemoryService(
         "default": {
             "provider": "github",
             "api_key": os.environ["GITHUB_TOKEN"],
+            # chat_model: gpt-4o-mini (same as OpenAI default — no change needed)
+            # embed_model: text-embedding-3-small (same as OpenAI default)
         },
     },
 )
-
-
-async def smoke_test() -> None:
-    # Write a short conversation to a temp file and memorize it
-    messages = [{"role": "user", "content": "GitHub Models is fully OpenAI API-compatible."}]
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-        json.dump(messages, f)
-        tmp_path = f.name
-
-    result = await service.memorize(
-        resource_url=tmp_path,
-        modality="conversation",
-        user={"user_id": "test-user"},
-    )
-    print(f"Memorized {len(result['items'])} item(s) via GitHub Models")
-
-    # Retrieve it back
-    result = await service.retrieve(
-        queries=[{"role": "user", "content": {"text": "What is GitHub Models?"}}],
-        where={"user_id": "test-user"},
-        method="rag",
-    )
-    for item in result.get("items", []):
-        print("-", item.get("summary", ""))
-
-
-asyncio.run(smoke_test())
 ```
 
-If items are printed, the GitHub Models provider is working end-to-end.
+`provider="github"` defaults:
 
----
+| Field | Value |
+|---|---|
+| `base_url` | `https://models.inference.ai.azure.com` |
+| `chat_model` | `gpt-4o-mini` |
+| `embed_model` | `text-embedding-3-small` |
 
-## Troubleshooting
+### Available models
 
-| Symptom | Likely cause | Fix |
+| Model | Type | Notes |
 |---|---|---|
-| `401 Unauthorized` | Token missing, expired, or lacks `models:read` | Regenerate the PAT and re-export `GITHUB_TOKEN` |
-| `429 Too Many Requests` | Rate limit on free or low-tier account | Add request delays; upgrade to GitHub Copilot Individual, Business, or Enterprise for higher limits |
-| `404 model not found` | Model name typo or not available on your tier | Check the table in Step 3; use `gpt-4o-mini` as a safe default |
-| Embedding calls fail, chat works | Embedding model not available on your tier | Explicitly set `"embed_model": "text-embedding-3-small"` — it is the most broadly available embedding model |
+| `gpt-4o-mini` | Chat | Default; cost-efficient |
+| `gpt-4o` | Chat | Higher quality |
+| `Phi-3.5-mini-instruct` | Chat | Open-weight alternative |
+| `text-embedding-3-small` | Embedding | Default |
+| `text-embedding-3-large` | Embedding | Higher-dimensional |
+
+### Rate limits
+
+| Account type | Notes |
+|---|---|
+| Free | Low limits — evaluation and small projects |
+| Copilot Individual | Moderate |
+| Copilot Business / Enterprise | Higher |
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `401` | Regenerate the PAT and verify `models:read` scope |
+| `429` | Add delays or upgrade to a paid Copilot plan |
+| `404` model not found | Use `gpt-4o-mini` (safe default) |
+| Embedding calls fail | Use `text-embedding-3-small` |
 
 ---
 
 ## When to stay on OpenAI
 
-GitHub Models is well-suited for development, prototyping, and small-to-medium deployments. Prefer the standard OpenAI provider if you need:
+Both GitHub providers are well-suited for development and moderate production loads.
+Prefer the standard `provider="openai"` if you need:
 
-- **High-throughput production workloads** with guaranteed SLAs and enterprise-grade rate limits
-- **Audio transcription** (Whisper) or other OpenAI-specific API surfaces not exposed via GitHub Models
+- **High-throughput workloads** with enterprise SLAs and predictable rate limits
+- **Audio transcription** (Whisper) — not exposed by either GitHub provider
 - **Fine-tuned models** or OpenAI Assistants API features
 
-For those cases, keep `api_key: os.environ["OPENAI_API_KEY"]` and omit the `provider` field (or set `provider="openai"`).
