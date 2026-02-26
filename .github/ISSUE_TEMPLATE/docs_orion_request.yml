@@ -1,15 +1,20 @@
 name: Docs Request (Orion)
-description: Free-form documentation request for Orion (`docs.agent.md`)
+description: Blank-style docs issue (assign to Orion / `docs.agent.md`)
 title: "[DOCS] "
 labels: ["documentation"]
 body:
   - type: markdown
     attributes:
       value: |
-        Free-form docs request for Orion (`.github/agents/docs.agent.md`).
+        Free-form docs issue.
 
-        Notes (optional):
-        - Default target is `kw/` unless you want `docs/` or `README.md`
-        - Diataxis is preferred (`tutorial`, `howto`, `reference`, `explanation`)
+        Assign this issue to **Orion** (`.github/agents/docs.agent.md`).
 
-
+  - type: textarea
+    id: details
+    attributes:
+      label: Details
+      description: Describe the docs request
+      placeholder: "What should Orion write/update?"
+    validations:
+      required: true
