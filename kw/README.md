@@ -9,6 +9,7 @@ Working documentation for the `memU` Python package. Organised using the [Diatax
 | Document | Summary |
 |---|---|
 | [When to use memU](explanation-when-to-use-memu.md) | Core mental model, use-case guidance, backend and retrieval trade-offs, user scoping rationale |
+| [memU as a proactive agent brain](explanation-memu-proactive-agent-brain.md) | Why memU is the memory layer of a proactive agent: the four roles, the two-loop architecture, category summaries as long-term memory |
 
 ## How-to guides — task-focused recipes
 
@@ -23,6 +24,7 @@ Working documentation for the `memU` Python package. Organised using the [Diatax
 | Document | What you build |
 |---|---|
 | [AI research assistant](tutorial-ai-research-assistant.md) | A CLI research assistant with SQLite-backed persistent memory |
+| [Proactive personal assistant](tutorial-proactive-personal-assistant.md) | A CLI proactive assistant with background memorization, proactive context injection, and CRUD memory management |
 
 ---
 
