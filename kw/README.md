@@ -37,4 +37,5 @@ Working documentation for the `memU` Python package. Organised using the [Diatax
 | SQLite configuration guide | [`docs/sqlite.md`](../docs/sqlite.md) |
 | LangGraph integration | [`docs/langgraph_integration.md`](../docs/langgraph_integration.md) |
 | Grok (xAI) provider | [`docs/integrations/grok.md`](../docs/integrations/grok.md) |
+| GitHub Copilot / GitHub Models provider | [`docs/providers/github-copilot.md`](../docs/providers/github-copilot.md) |
 | Architectural decisions | [`docs/adr/`](../docs/adr/) |
