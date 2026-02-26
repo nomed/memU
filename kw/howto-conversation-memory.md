@@ -140,7 +140,7 @@ def build_system_prompt(memory_items: list[dict]) -> str:
         f"{base}\n\n"
         "## What you know about this user\n"
         f"{memories_text}\n\n"
-        "Use this context to personalise your responses."
+        "Use this context to personalize your responses."
     )
 ```
 
@@ -238,7 +238,7 @@ async def main() -> None:
             f"{base}\n\n"
             "## What you know about this user\n"
             f"{memories_text}\n\n"
-            "Use this context to personalise your responses."
+            "Use this context to personalize your responses."
         )
 
     system_prompt = build_system_prompt(items)

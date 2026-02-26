@@ -110,7 +110,7 @@ alice_messages = [
     {"role": "assistant", "content": "That sounds great!"},
 ]
 bob_messages = [
-    {"role": "user", "content": "I'm a professional chef specialising in Italian cuisine."},
+    {"role": "user", "content": "I'm a professional chef specializing in Italian cuisine."},
     {"role": "assistant", "content": "Wonderful! Do you have a favourite dish?"},
 ]
 
@@ -210,7 +210,7 @@ async def main() -> None:
             {"role": "assistant", "content": "Sounds adventurous!"},
         ],
         "bob": [
-            {"role": "user",      "content": "I'm a chef specialising in Italian cuisine."},
+            {"role": "user",      "content": "I'm a chef specializing in Italian cuisine."},
             {"role": "assistant", "content": "Wonderful!"},
         ],
     }

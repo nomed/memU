@@ -34,7 +34,7 @@ This hierarchy means you can ask broad questions ("what do I know about Alice's 
 
 Any chatbot or voice assistant that talks to the same user across multiple sessions benefits from persistent memory. memU memorizes each conversation turn, so the next session can open with "you mentioned last week that you prefer concise answers — keeping that in mind." The assistant grows smarter with each interaction without re-reading entire history.
 
-### long-running autonomous agents
+### Long-running autonomous agents
 
 Agents that run over days or weeks — research bots, project managers, personal productivity agents — need to remember what they have already done, what they discovered, and what remains. memU gives these agents a structured journal: past resources (documents, search results) are stored, and the agent can retrieve context-specific items before taking the next action.
 
